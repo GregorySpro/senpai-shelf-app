@@ -1,12 +1,55 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
 
+
 const Register = () => {
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [passwordConfirm, setPasswordConfirm] = React.useState('');
 
     const passwordsMatch = password === passwordConfirm && password.length > 0;
+
+    const HandleRegister = () => {
+      console.log('Register function called');
+
+      fetch('https://senpai-shelf-api.onrender.com/users')
+      .then(response => response.json())
+      .then(data => {
+        const emailExists = data.some(user => user.username === username);
+
+        if (emailExists) {
+          console.log("Ce nom d'utilisateur est déjà utilisé !");
+          alert("Ce nom d'utilisateur est déjà utilisé ! Merci de choisir un autre.");
+          // Tu peux aussi afficher une alerte ou bloquer l'inscription ici
+        } else {
+          fetch('https://senpai-shelf-api.onrender.com/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+            username: username,
+            password: password
+            })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.error) {
+              console.log('Erreur:', data.error);
+            } else {
+              console.log('Inscription réussie !', data.user);
+            }
+          })
+          .catch(error => {
+            console.error('Erreur réseau :', error);
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Erreur lors de la requête :', error);
+      });
+    };
+  
   return (
 
     <View style={styles.container}>
@@ -45,7 +88,7 @@ const Register = () => {
         ) : ''}
         </Text>
 
-        <TouchableOpacity style={{width: '53.33%', alignSelf: 'center', }} onPress={() => console.log('Register pressed : ', username, password, passwordConfirm)}>
+        <TouchableOpacity style={{width: '53.33%', alignSelf: 'center', }} onPress={() => HandleRegister()}>
             <Image source={require('../assets/register_button.png')} style={{alignSelf: 'center', marginTop: '15.06%'}}/>
         </TouchableOpacity>
 
