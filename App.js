@@ -1,6 +1,12 @@
-import { StyleSheet, Text, View } from 'react-native';
-import Register from './components/Register';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as Font from 'expo-font';
+
+import Register from './components/Register';
+import Login from './components/Login';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [fontsLoaded] = Font.useFonts({
@@ -8,19 +14,15 @@ export default function App() {
   });
 
   if (!fontsLoaded) {
-    return null; // ou <AppLoading />
+    return null; // ou un <Loading /> si tu veux une animation de chargement
   }
 
   return (
-    <View style={styles.container}>
-      <Register />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="Login" component={Login} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-});
